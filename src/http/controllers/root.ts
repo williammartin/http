@@ -20,14 +20,6 @@ class RootController {
   public async in(req: Request, res: Response): Promise<any> {
     await this.serviceManager.handle(req, res)
   }
-
-  // GET is not correct
-  // @Get("/in/:appID")
-  // public async in(@Req() request: Request, @Res() response: Response): Promise<any> {
-  //   await this.serviceManager.handle(request, response)
-  // }
-
-
 }
 
 export {
