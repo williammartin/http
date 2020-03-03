@@ -1,9 +1,14 @@
+import { Router } from 'express';
+
+import { EventBus } from './events';
 import { HTTPServer } from './http/server';
-import Router from './router';
 
 async function main() {
     const domain = getEnvOrError('DOMAIN');
-    const router = new Router(domain);
+    const runtimeURL = getEnvOrError('RUNTIME_URL');
+
+    const events = new EventBus(runtimeURL);
+    const router = new Router(domain, events);
 
     const server = new HTTPServer(router);
     server.start('9000');

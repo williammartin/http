@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { find, remove } from 'lodash';
 
-import eventManager from './events';
-
 type HTTPRoute = {
   eventID: string;
   host: string;
@@ -19,13 +17,20 @@ export interface UnlistenRequest {
   eventID: string;
 }
 
+interface Events {
+  submit(eventID: string, payload: any): Promise<void>
+}
+
 class Router {
 
   private domain: string;
+  private events: Events;
   private routes: HTTPRoute[];
 
-  constructor(domain: string) {
+  // TODO: split events from the Router (router shouldn't submit, only determine where to send requests)
+  constructor(domain: string, events: Events) {
     this.domain = domain;
+    this.events = events;
     this.routes = [];
   }
 
@@ -62,9 +67,11 @@ class Router {
       return;
     }
 
-    await eventManager.submitEvent(route.eventID, payload);
+    await this.events.submit(route.eventID, payload);
     res.send("Handled");
   }
 }
 
-export default Router;
+export {
+  Router
+}
