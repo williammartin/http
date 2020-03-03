@@ -1,11 +1,19 @@
-import HTTPServiceManager from "./manager";
-import { HTTPServer } from "./http/server";
- 
-async function main() {
-    const serviceManager = new HTTPServiceManager();
+import { HTTPServer } from './http/server';
+import Router from './router';
 
-    const server = new HTTPServer(serviceManager);
+async function main() {
+    const domain = getEnvOrError('DOMAIN');
+    const router = new Router(domain);
+
+    const server = new HTTPServer(router);
     server.start('9000');
+}
+
+function getEnvOrError(envVar: string): string {
+    if (!process.env[envVar]) {
+        throw new Error(`Environment variable '` + envVar + `' must be set.`);
+    }
+    return process.env[envVar] || '';
 }
 
 main().catch(err => {

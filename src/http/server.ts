@@ -1,28 +1,31 @@
-import HTTPServiceManager, { ListenRequest } from "../manager";
+import { Application, Request, Response } from 'express';
 
-import { RootController } from "./controllers/root";
+import Router from '../router';
+import { RootController } from './controllers/root';
+
 const express = require('express');
-import { Application, Request, Response } from 'express'
 const bodyParser = require('body-parser')
 
 
 class HTTPServer {
 
   private app: Application;
-  private serviceManager: HTTPServiceManager;
+  private serviceManager: Router;
 
-  constructor(serviceManager: HTTPServiceManager) {
+  constructor(serviceManager: Router) {
     this.app = express();
     this.serviceManager = serviceManager;
   }
 
   public async start(port: string): Promise<any> {
     this.app.use(bodyParser.json())
-    
+
     const ctr = new RootController(this.serviceManager);
 
     this.app.post('/listen', async (req: Request, res: Response) => ctr.listen(req, res))
-    this.app.get('/in/:path', async (req: Request, res: Response) => ctr.in(req, res))
+    this.app.post('/unlisten', async (req: Request, res: Response) => ctr.unlisten(req, res))
+
+    this.app.get('/*', async (req: Request, res: Response) => ctr.in(req, res))
 
     return this.app.listen(port);
   }

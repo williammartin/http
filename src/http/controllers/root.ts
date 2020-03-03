@@ -1,24 +1,28 @@
+import { Request, Response } from 'express';
 
-import { Request, Response } from "express";
-
-import HTTPServiceManager, { ListenRequest } from "../../manager";
+import Router, { ListenRequest, UnlistenRequest } from '../../router';
 
 class RootController {
 
-  private serviceManager: HTTPServiceManager;
+  private router: Router;
 
   // Injected by routing-controller
-  constructor(serviceManager: HTTPServiceManager) {
-    this.serviceManager = serviceManager;
+  constructor(serviceManager: Router) {
+    this.router = serviceManager;
   }
 
   public async listen(req: Request, res: Response): Promise<void> {
-    await this.serviceManager.listen(req.body as ListenRequest);
+    await this.router.listen(req.body as ListenRequest);
+    res.sendStatus(200)
+  }
+
+  public async unlisten(req: Request, res: Response): Promise<void> {
+    await this.router.unlisten(req.body as UnlistenRequest);
     res.sendStatus(200)
   }
 
   public async in(req: Request, res: Response): Promise<any> {
-    await this.serviceManager.handle(req, res)
+    await this.router.handle(req, res)
   }
 }
 
