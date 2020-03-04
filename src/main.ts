@@ -1,5 +1,3 @@
-import { Container } from "typedi";
-
 import { Router } from '@/router';
 import { EventBus } from '@/events';
 import { HTTPServer } from '@/http/server';
@@ -10,12 +8,9 @@ async function main() {
     const domain = getEnvOrError('DOMAIN');
     const runtimeURL = getEnvOrError('RUNTIME_URL');
 
-    const eventBus = new EventBus(runtimeURL);
-    Container.set("eventBus", eventBus);
-
     const router = new Router(domain);
-
-    const controller = new RootController(router);
+    const eventBus = new EventBus(runtimeURL);
+    const controller = new RootController(router, eventBus);
     const server = new HTTPServer(controller);
     await server.start('9000');
 }

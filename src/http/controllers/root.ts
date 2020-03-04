@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Container } from 'typedi';
 
 import { Router, ListenRequest, UnlistenRequest, HandleResponse } from '@/router';
 
@@ -13,9 +12,9 @@ export class RootController {
     private readonly router: Router;
     private readonly eventBus: Events;
 
-    constructor(router: Router) {
+    constructor(router: Router, eventBus: Events) {
         this.router = router;
-        this.eventBus = Container.get("eventBus");
+        this.eventBus = eventBus;
     }
 
     listen(req: Request, res: Response): void {

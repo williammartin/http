@@ -21,10 +21,7 @@
     "start": "ts-node-dev --respawn --transpileOnly -r tsconfig-paths/register src/main.ts"
   },
   "devDependencies": {
-    "@types/bent": "^7.0.1",
     "@types/body-parser": "^1.19.0",
-    "@types/koa": "^2.11.2",
-    "@types/koa-mount": "^4.0.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^10.0.3",
     "gts": "^1.1.2",
@@ -33,16 +30,8 @@
     "typescript": "~3.7.0"
   },
   "dependencies": {
-    "bent": "^7.1.0",
     "body-parser": "^1.19.0",
-    "class-transformer": "^0.2.3",
-    "class-validator": "^0.11.0",
     "express": "^4.17.1",
-    "koa": "^2.11.0",
-    "koa-bodyparser": "^4.2.1",
-    "koa-mount": "^4.0.0",
-    "koa-router": "^8.0.0-alpha.1",
-    "typed-rest-client": "^1.7.2",
-    "typedi": "^0.8.0"
+    "typed-rest-client": "^1.7.2"
   }
 }
