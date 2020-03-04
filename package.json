@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "http",
   "version": "0.0.0",
   "description": "",
   "main": "build/src/index.js",
@@ -24,14 +24,14 @@
     "@types/bent": "^7.0.1",
     "@types/koa-mount": "^4.0.0",
     "@types/node": "^10.0.3",
+    "@types/body-parser": "^1.19.0",
+    "@types/koa": "^2.11.2",
+    "@types/lodash": "^4.14.149",
     "gts": "^1.1.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "~3.7.0"
   },
   "dependencies": {
-    "@types/body-parser": "^1.19.0",
-    "@types/koa": "^2.11.2",
-    "@types/lodash": "^4.14.149",
     "bent": "^7.1.0",
     "body-parser": "^1.19.0",
     "class-transformer": "^0.2.3",
@@ -42,6 +42,7 @@
     "koa-mount": "^4.0.0",
     "koa-router": "^8.0.0-alpha.1",
     "routing-controllers": "^0.8.1-alpha.2",
+    "typed-rest-client": "^1.7.2",
     "typedi": "^0.8.0"
   }
 }
