@@ -2,7 +2,6 @@ import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import { Server } from 'http';
 
-import { Router } from '@/router';
 import { RootController } from '@/http/controllers/root';
 
 
@@ -11,9 +10,9 @@ export class HTTPServer {
     private readonly app: Application;
     private readonly controller: RootController;
 
-    constructor(router: Router) {
+    constructor(controller: RootController) {
         this.app = express();
-        this.controller = new RootController(router);
+        this.controller = controller;
         this.setupMiddleware();
         this.setupRoutes();
     }
