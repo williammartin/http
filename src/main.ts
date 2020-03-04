@@ -3,6 +3,7 @@ import { Container } from "typedi";
 import { Router } from '@/router';
 import { EventBus } from '@/events';
 import { HTTPServer } from '@/http/server';
+import { RootController } from "@/http/controllers/root";
 
 
 async function main() {
@@ -13,7 +14,9 @@ async function main() {
     Container.set("eventBus", eventBus);
 
     const router = new Router(domain);
-    const server = new HTTPServer(router);
+
+    const controller = new RootController(router);
+    const server = new HTTPServer(controller);
     await server.start('9000');
 }
 
