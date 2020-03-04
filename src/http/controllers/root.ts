@@ -1,31 +1,31 @@
 import { Request, Response } from 'express';
 
-import Router, { ListenRequest, UnlistenRequest } from '../../router';
+import { ListenRequest, Router, UnlistenRequest } from '../../router';
 
 class RootController {
 
-  private router: Router;
+    private router: Router;
 
-  // Injected by routing-controller
-  constructor(serviceManager: Router) {
-    this.router = serviceManager;
-  }
+    // Injected by routing-controller
+    constructor(serviceManager: Router) {
+        this.router = serviceManager;
+    }
 
-  public async listen(req: Request, res: Response): Promise<void> {
-    await this.router.listen(req.body as ListenRequest);
-    res.sendStatus(200)
-  }
+    public async listen(req: Request, res: Response): Promise<void> {
+        await this.router.listen(req.body as ListenRequest);
+        res.sendStatus(200)
+    }
 
-  public async unlisten(req: Request, res: Response): Promise<void> {
-    await this.router.unlisten(req.body as UnlistenRequest);
-    res.sendStatus(200)
-  }
+    public async unlisten(req: Request, res: Response): Promise<void> {
+        await this.router.unlisten(req.body as UnlistenRequest);
+        res.sendStatus(200)
+    }
 
-  public async in(req: Request, res: Response): Promise<any> {
-    await this.router.handle(req, res)
-  }
+    public async in(req: Request, res: Response): Promise<any> {
+        await this.router.handle(req, res)
+    }
 }
 
 export {
-  RootController,
+    RootController,
 };

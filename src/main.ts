@@ -1,5 +1,4 @@
-import { Router } from 'express';
-
+import { Router } from './router';
 import { EventBus } from './events';
 import { HTTPServer } from './http/server';
 
@@ -11,7 +10,7 @@ async function main() {
     const router = new Router(domain, events);
 
     const server = new HTTPServer(router);
-    server.start('9000');
+    await server.start('9000');
 }
 
 function getEnvOrError(envVar: string): string {
