@@ -1,36 +1,34 @@
-import { Application, Request, Response } from 'express';
+import express, { Application, Request, Response } from 'express';
+import bodyParser from 'body-parser';
+import { Server } from 'http';
 
-import { Router } from '../router';
-import { RootController } from './controllers/root';
-
-const express = require('express');
-const bodyParser = require('body-parser');
+import { Router } from '@/router';
+import { RootController } from '@/http/controllers/root';
 
 
-class HTTPServer {
+export class HTTPServer {
 
-    private app: Application;
-    private serviceManager: Router;
+    private readonly app: Application;
+    private readonly controller: RootController;
 
-    constructor(serviceManager: Router) {
+    constructor(router: Router) {
         this.app = express();
-        this.serviceManager = serviceManager;
+        this.controller = new RootController(router);
+        this.setupMiddleware();
+        this.setupRoutes();
     }
 
-    public async start(port: string): Promise<any> {
+    private setupMiddleware() {
         this.app.use(bodyParser.json());
+    }
 
-        const ctr = new RootController(this.serviceManager);
+    private setupRoutes(): void {
+        this.app.post('/listen', async (req: Request, res: Response) => this.controller.listen(req, res));
+        this.app.post('/unlisten', async (req: Request, res: Response) => this.controller.unlisten(req, res));
+        this.app.use('/*', async (req: Request, res: Response) => this.controller.in(req, res));
+    }
 
-        this.app.post('/listen', async (req: Request, res: Response) => ctr.listen(req, res));
-        this.app.post('/unlisten', async (req: Request, res: Response) => ctr.unlisten(req, res));
-
-        this.app.get('/*', async (req: Request, res: Response) => ctr.in(req, res));
-
+    async start(port: string): Promise<Server> {
         return this.app.listen(port);
     }
-}
-
-export {
-    HTTPServer,
 }

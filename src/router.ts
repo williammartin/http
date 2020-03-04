@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { find, remove } from 'lodash';
 
+
 type HTTPRoute = {
     eventID: string;
     host: string;
@@ -17,61 +18,55 @@ export interface UnlistenRequest {
     eventID: string;
 }
 
-interface Events {
-    submit(eventID: string, payload: any): Promise<void>
+export interface HandleResponse {
+    eventID: string,
+    eventPayload: any
 }
 
-class Router {
+export class Router {
 
-    private domain: string;
-    private events: Events;
-    private routes: HTTPRoute[];
+    private readonly domain: string;
+    private readonly routes: HTTPRoute[];
 
-    // TODO: split events from the Router (router shouldn't submit, only determine where to send requests)
-    constructor(domain: string, events: Events) {
+    constructor(domain: string) {
         this.domain = domain;
-        this.events = events;
         this.routes = [];
     }
 
-    async listen(req: ListenRequest): Promise<void> {
-        let path = req.path;
+    private registerRoute(eventID: string, appID: string, path: string): void {
         if (path.length === 0) {
             path = "/";
         } else if (!path.startsWith("/")) {
-            path = "/" + path;
+            path = `/${path}`;
         }
-
-        const host = req.appID + "." + this.domain;
-
-        const route = {
-            eventID: req.eventID,
-            host,
-            path,
-        };
-
+        const host = `${appID}.${this.domain}`;
+        const route = { eventID, host, path };
         this.routes.push(route);
     }
 
-    async unlisten(req: UnlistenRequest): Promise<void> {
-        remove(this.routes, { eventID: req.eventID })
+    private unregisterRoute(eventID: string): void {
+        remove(this.routes, { eventID })
     }
 
-    async handle(req: Request, res: Response): Promise<void> {
-        const route = find(this.routes, { path: req.path, host: req.hostname });
-        const payload = { queryParams: req.query };
+    private matchRoute(req: Request): HTTPRoute | undefined {
+        return find(this.routes, { path: req.path, host: req.hostname });
+    }
 
+    listen(req: ListenRequest): void {
+        this.registerRoute(req.eventID, req.appID, req.path);
+    }
+
+    unlisten(req: UnlistenRequest): void {
+        this.unregisterRoute(req.eventID);
+    }
+
+    handle(req: Request): HandleResponse {
+        const route = this.matchRoute(req);
         if (route === undefined) {
-            res.sendStatus(404);
-            console.log(this.routes, route);
-            return;
+            throw new Error("NOT_FOUND");
         }
-
-        await this.events.submit(route.eventID, payload);
-        res.send("Handled");
+        const eventID = route.eventID;
+        const eventPayload = { queryParams: req.query };
+        return { eventID, eventPayload };
     }
-}
-
-export {
-    Router
 }
