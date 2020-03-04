@@ -1,31 +1,42 @@
 import { Request, Response } from 'express';
+import { Container } from 'typedi';
 
-import { ListenRequest, Router, UnlistenRequest } from '../../router';
+import { Router, ListenRequest, UnlistenRequest, HandleResponse } from '@/router';
 
-class RootController {
 
-    private router: Router;
-
-    // Injected by routing-controller
-    constructor(serviceManager: Router) {
-        this.router = serviceManager;
-    }
-
-    public async listen(req: Request, res: Response): Promise<void> {
-        await this.router.listen(req.body as ListenRequest);
-        res.sendStatus(200)
-    }
-
-    public async unlisten(req: Request, res: Response): Promise<void> {
-        await this.router.unlisten(req.body as UnlistenRequest);
-        res.sendStatus(200)
-    }
-
-    public async in(req: Request, res: Response): Promise<any> {
-        await this.router.handle(req, res)
-    }
+interface Events {
+    submit(eventID: string, payload: any): Promise<void>
 }
 
-export {
-    RootController,
-};
+export class RootController {
+
+    private readonly router: Router;
+    private readonly eventBus: Events;
+
+    constructor(router: Router) {
+        this.router = router;
+        this.eventBus = Container.get("eventBus");
+    }
+
+    listen(req: Request, res: Response): void {
+        this.router.listen(req.body as ListenRequest);
+        res.sendStatus(200)
+    }
+
+    unlisten(req: Request, res: Response): void {
+        this.router.unlisten(req.body as UnlistenRequest);
+        res.sendStatus(200)
+    }
+
+    async in(req: Request, res: Response): Promise<Response> {
+        let handleResponse: HandleResponse;
+        try {
+            handleResponse = this.router.handle(req);
+        }
+        catch (e) {
+            return res.sendStatus(404);
+        }
+        await this.eventBus.submit(handleResponse.eventID, handleResponse.eventPayload);
+        return res.send("Handled");
+    }
+}

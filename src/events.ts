@@ -1,9 +1,10 @@
 import * as rm from 'typed-rest-client/HttpClient';
 
-class EventBus {
 
-    private httpClient: rm.HttpClient;
-    private runtimeURL: string;
+export class EventBus {
+
+    private readonly httpClient: rm.HttpClient;
+    private readonly runtimeURL: string;
 
     constructor(runtimeURL: string) {
         this.runtimeURL = runtimeURL;
@@ -15,19 +16,12 @@ class EventBus {
         });
     }
 
-    public async submit(eventID: string, payload: any /*eslint-disable-line @typescript-eslint/no-explicit-any */): Promise<void> {
-        const body: { id: string, payload: any } = {
-            id: eventID,
-            payload: payload,
-        };
+    async submit(eventID: string, payload: any): Promise<void> {
+        const body: { id: string, payload: any } = { id: eventID, payload };
 
-        let res: rm.HttpClientResponse = await this.httpClient.post(this.runtimeURL + '/app/events', JSON.stringify(body));
+        const res = await this.httpClient.post(this.runtimeURL + '/app/events', JSON.stringify(body));
         if (res.message.statusCode !== 200) {
             return Promise.reject(new Error(`Expected status code to be 200 but was ${res.message.statusCode}`));
         }
     }
 }
-
-export {
-    EventBus
-};
